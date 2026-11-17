@@ -1,0 +1,38 @@
+<?php
+
+return [
+    'name' => 'Bulk Orders',
+    'menu' => 'Bulk Orders',
+    'edit' => 'Bulk order :code',
+    'enquiry_details' => 'Enquiry Details',
+    'no_products' => 'No products were added to this enquiry.',
+    'submit_success' => 'Thank you! Your bulk order enquiry has been submitted successfully.',
+    'statuses' => [
+        'new' => 'New',
+        'contacted' => 'Contacted',
+        'processing' => 'Processing',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+    ],
+    'fields' => [
+        'code' => 'Enquiry ID',
+        'full_name' => 'Full Name',
+        'company_name' => 'Company / Institution Name',
+        'phone' => 'Mobile / WhatsApp Number',
+        'email' => 'Email',
+        'customer_type' => 'Customer Type',
+        'products' => 'Products',
+        'product_name' => 'Product',
+        'quantity' => 'Quantity',
+        'unit' => 'Unit',
+        'message' => 'Requirement / Message',
+        'delivery_location' => 'Delivery Location',
+        'address' => 'Address',
+        'city' => 'City',
+        'state' => 'State',
+        'pincode' => 'Pincode',
+        'gstin' => 'GSTIN',
+        'admin_note' => 'Admin Note',
+        'submitted_at' => 'Submitted At',
+    ],
+];

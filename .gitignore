@@ -1,0 +1,58 @@
+# ============================================================
+# BGM Pro Sports - Root .gitignore
+# Code-only repository: source code in, runtime/secrets/media out.
+# Note: main/.gitignore is preserved untouched and still applies
+# to everything under main/.
+# ============================================================
+
+# --- Composer dependencies (regenerate with: composer install) ---
+/main/vendor/
+
+# --- Node modules (regenerate with: npm ci) ---
+node_modules/
+
+# --- Environment & secrets (NEVER commit) ---
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# --- Uploaded media / public storage ---
+# Public path is the repo root, so uploads land here (see index.php).
+/storage/
+
+# --- Laravel runtime: compiled views, cache, sessions, logs ---
+/main/storage/framework/views/
+/main/storage/framework/cache/
+/main/storage/framework/sessions/
+/main/storage/framework/testing/
+/main/storage/logs/
+/main/storage/debugbar/
+/main/storage/app/public/
+
+# --- Database files / dumps (keep backups OUTSIDE the repo) ---
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+
+# --- Generated archives / backup zips ---
+*.zip
+
+# --- IDE / editor ---
+/.vscode/
+/.idea/
+*.swp
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+
+# --- Tooling caches ---
+.phpunit.result.cache
+.php-cs-fixer.cache
+.sass-cache/
