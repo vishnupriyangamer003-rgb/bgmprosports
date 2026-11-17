@@ -4,7 +4,7 @@ namespace Botble\Ecommerce\Http\Requests;
 
 use Botble\Base\Facades\BaseHelper;
 use Botble\Base\Http\Requests\Concerns\HasPhoneFieldValidation;
-use Botble\Base\Rules\CountryPhoneLengthRule;
+use Botble\Base\Rules\PhoneNumberRule;
 use Botble\Base\Rules\EmailRule;
 use Botble\Base\Rules\UniquePhoneRule;
 use Botble\Ecommerce\Facades\EcommerceHelper;
@@ -37,7 +37,7 @@ class RegisterRequest extends Request
                 'string',
                 Rule::requiredIf(EcommerceHelper::isLoginUsingPhone() || get_ecommerce_setting('make_customer_phone_number_required', false)),
                 ...explode('|', BaseHelper::getPhoneValidationRule()),
-                new CountryPhoneLengthRule(),
+                PhoneNumberRule::countryLength(),
                 UniquePhoneRule::make(Customer::class),
             ],
             'password' => ['required', 'string', 'min:6', 'confirmed'],

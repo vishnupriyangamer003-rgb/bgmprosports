@@ -503,11 +503,56 @@
                             updateHiddenField();
                         });
 
+                        // Per-country validation (intl-tel-input utils knows every country's rules).
+                        // Empty values are left to the server's required/optional rules.
+                        const invalidMessage = @json(__('Please enter a valid phone number for the selected country.'));
+
+                        const clearPhoneError = function() {
+                            element.classList.remove('is-invalid');
+                            const existing = element.closest('.iti')?.parentElement?.querySelector('.js-phone-error');
+                            if (existing) {
+                                existing.remove();
+                            }
+                        };
+
+                        const isPhoneInvalid = function() {
+                            if (! element.value.trim()) {
+                                return false;
+                            }
+
+                            // isValidNumber() returns null while utils.js is still loading.
+                            return iti.isValidNumber() === false;
+                        };
+
+                        const showPhoneError = function() {
+                            clearPhoneError();
+                            element.classList.add('is-invalid');
+                            const wrapper = element.closest('.iti') || element;
+                            const error = document.createElement('div');
+                            error.className = 'invalid-feedback d-block js-phone-error';
+                            error.textContent = invalidMessage;
+                            wrapper.insertAdjacentElement('afterend', error);
+                        };
+
+                        element.addEventListener('blur', function() {
+                            isPhoneInvalid() ? showPhoneError() : clearPhoneError();
+                        });
+
+                        element.addEventListener('input', clearPhoneError);
+                        element.addEventListener('countrychange', clearPhoneError);
+
                         const form = element.closest('form');
                         if (form) {
-                            form.addEventListener('submit', function() {
+                            form.addEventListener('submit', function(event) {
                                 updateHiddenField();
-                            });
+
+                                if (isPhoneInvalid()) {
+                                    event.preventDefault();
+                                    event.stopImmediatePropagation();
+                                    showPhoneError();
+                                    element.focus();
+                                }
+                            }, true);
                         }
                     }
                 }

@@ -199,7 +199,7 @@ class HookServiceProvider extends ServiceProvider
                         'shop_phone' => array_merge([
                             'nullable',
                             'required_if:is_vendor,1',
-                        ], explode('|', BaseHelper::getPhoneValidationRule()), [new \Botble\Base\Rules\CountryPhoneLengthRule()]),
+                        ], explode('|', BaseHelper::getPhoneValidationRule()), [\Botble\Base\Rules\PhoneNumberRule::countryLength()]),
                         'shop_url' => [
                             'nullable',
                             'required_if:is_vendor,1',

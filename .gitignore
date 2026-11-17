@@ -39,6 +39,11 @@ node_modules/
 # --- Generated archives / backup zips ---
 *.zip
 
+# --- Local backups (keep these OUT of the repo) ---
+*.backup.*
+*_backup.*
+*.bak
+
 # --- IDE / editor ---
 /.vscode/
 /.idea/

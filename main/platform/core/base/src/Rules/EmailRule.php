@@ -72,7 +72,13 @@ class EmailRule implements ValidationRule
             return;
         }
 
-        (new GmailAddressRule())->validate('email', $value, $fail);
+        if (preg_match('/@(gmail|googlemail)\.com$/i', $value)) {
+            $local = substr($value, 0, (int) strrpos($value, '@'));
+
+            if (! preg_match('/^[a-z0-9](?:[a-z0-9.]{4,28})[a-z0-9]$/i', $local) || str_contains($local, '..')) {
+                $fail(__('Please enter a valid email address.'));
+            }
+        }
     }
 
     public static function make(): static
