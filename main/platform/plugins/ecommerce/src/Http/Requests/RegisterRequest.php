@@ -28,6 +28,7 @@ class RegisterRequest extends Request
             'email' => [
                 'nullable',
                 'string',
+                'email:rfc',
                 Rule::requiredIf(! EcommerceHelper::isLoginUsingPhone()),
                 new EmailRule(),
                 Rule::unique((new Customer())->getTable()),

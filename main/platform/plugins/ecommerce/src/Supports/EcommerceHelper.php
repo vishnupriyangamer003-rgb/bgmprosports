@@ -10,6 +10,7 @@ use Botble\Base\Forms\FieldOptions\RepeaterFieldOption;
 use Botble\Base\Forms\Fields\RepeaterField;
 use Botble\Base\Forms\FormAbstract;
 use Botble\Base\Models\BaseQueryBuilder;
+use Botble\Base\Rules\PhoneNumberRule;
 use Botble\Base\Supports\Helper;
 use Botble\Ecommerce\Enums\OrderStatusEnum;
 use Botble\Ecommerce\Enums\ProductTypeEnum;
@@ -737,7 +738,7 @@ class EcommerceHelper
             $prefix . 'state' => ['required', 'max:120'],
             $prefix . 'city' => ['required', 'max:120'],
             $prefix . 'address' => ['required', 'max:120'],
-            $prefix . 'phone' => $this->getPhoneValidationRule(),
+            $prefix . 'phone' => [...explode('|', $this->getPhoneValidationRule()), new PhoneNumberRule()],
         ];
 
         if ($this->isUsingInMultipleCountries()) {

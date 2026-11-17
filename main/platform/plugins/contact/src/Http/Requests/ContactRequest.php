@@ -36,6 +36,13 @@ class ContactRequest extends Request
         return $this;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->filled('phone') && $this->filled('phone_display')) {
+            $this->merge(['phone' => $this->input('phone_display')]);
+        }
+    }
+
     public function rules(): array
     {
         $rules = [

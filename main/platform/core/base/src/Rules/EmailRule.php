@@ -58,13 +58,58 @@ class EmailRule implements ValidationRule
     }
 
     /**
-     * Commonly mistyped provider domains and impossible Gmail addresses.
+     * Commonly mistyped provider domains, invalid TLDs, and impossible Gmail addresses.
      */
     protected function validateKnownTypos(string $value, Closure $fail): void
     {
         $domain = Str::after(strtolower($value), '@');
 
-        $typoDomains = ['email.com', 'gmial.com', 'gmai.com', 'gmaill.com', 'gamil.com', 'gnail.com', 'gmail.co', 'gmail.con', 'yahooo.com', 'yaho.com', 'hotmial.com', 'hotmai.com', 'outlok.com', 'outllook.com'];
+        if (! $domain || ! str_contains($domain, '.')) {
+            $fail(trans('validation.email'));
+
+            return;
+        }
+
+        // TLD syntax must be alphabetic or punycode (e.g. rejects digits like .c0m, .123)
+        if (! preg_match('/\.(?:[a-z]{2,24}|xn--[a-z0-9-]+)$/i', $domain)) {
+            $fail(trans('validation.email'));
+
+            return;
+        }
+
+        $domainParts = explode('.', $domain);
+        $provider = $domainParts[0] ?? '';
+        $tld = end($domainParts);
+
+        // Disallow common typo TLDs
+        $typoTlds = ['c0m', 'con', 'comm', 'coom', 'cm', 'vom', 'cpm', 'ogr', 'nte', 'ent'];
+        if (in_array($tld, $typoTlds, true)) {
+            $fail(trans('validation.email'));
+
+            return;
+        }
+
+        // Disallow common typo provider domain names (e.g. gamil, gmial, etc.)
+        $typoProviders = [
+            'email', 'gamil', 'gmial', 'gmai', 'gmaill', 'gnail', 'gmal', 'gmeil', 'gamail', 'gmaul',
+            'yahooo', 'yaho', 'yahu', 'yhaoo', 'yahou',
+            'hotmial', 'hotmai', 'hotmaill', 'hotmil', 'hotmali',
+            'outlok', 'outllook', 'outlock', 'outloook',
+        ];
+
+        if (in_array($provider, $typoProviders, true)) {
+            $fail(trans('validation.email'));
+
+            return;
+        }
+
+        $typoDomains = [
+            'email.com', 'gmial.com', 'gmai.com', 'gmaill.com', 'gamil.com', 'gnail.com',
+            'gmail.co', 'gmail.con', 'gmail.c0m', 'gamil.c0m',
+            'yahooo.com', 'yaho.com', 'yahoo.c0m', 'yahoo.con',
+            'hotmial.com', 'hotmai.com', 'hotmail.c0m', 'hotmail.con',
+            'outlok.com', 'outllook.com', 'outlook.c0m', 'outlook.con',
+        ];
 
         if (in_array($domain, $typoDomains, true)) {
             $fail(trans('validation.email'));

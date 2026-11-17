@@ -126,6 +126,12 @@ class RegisterForm extends AuthForm
                 HtmlFieldOption::make()
                     ->view('plugins/ecommerce::customers.includes.login-link')
             )
+            ->add(
+                'email_validation_script',
+                HtmlField::class,
+                HtmlFieldOption::make()
+                    ->view('plugins/ecommerce::customers.includes.email-validation-script')
+            )
             ->add('filters', HtmlField::class, [
                 'html' => apply_filters(BASE_FILTER_AFTER_LOGIN_OR_REGISTER_FORM, null, Customer::class),
             ]);

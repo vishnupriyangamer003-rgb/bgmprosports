@@ -4,6 +4,7 @@ namespace Botble\Base\Helpers;
 
 use Botble\Base\Facades\AdminAppearance;
 use Botble\Base\Facades\Html;
+use Botble\Base\Rules\PhoneNumberRule;
 use Botble\Base\Supports\GoogleFonts;
 use Botble\Base\Supports\HTMLPurifier\URIScheme\ViberURIScheme;
 use Botble\Base\View\Components\BadgeComponent;
@@ -310,7 +311,7 @@ class BaseHelper
         }
 
         if ($asArray) {
-            return explode('|', $rule);
+            return [...explode('|', $rule), new PhoneNumberRule()];
         }
 
         return $rule;
