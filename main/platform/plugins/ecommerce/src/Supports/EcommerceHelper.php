@@ -10,6 +10,7 @@ use Botble\Base\Forms\FieldOptions\RepeaterFieldOption;
 use Botble\Base\Forms\Fields\RepeaterField;
 use Botble\Base\Forms\FormAbstract;
 use Botble\Base\Models\BaseQueryBuilder;
+use Botble\Base\Rules\EmailRule;
 use Botble\Base\Rules\PhoneNumberRule;
 use Botble\Base\Supports\Helper;
 use Botble\Ecommerce\Enums\OrderStatusEnum;
@@ -733,8 +734,8 @@ class EcommerceHelper
     public function getCustomerAddressValidationRules(?string $prefix = ''): array
     {
         $rules = [
-            $prefix . 'name' => ['required', 'min:3', 'max:120'],
-            $prefix . 'email' => ['email', 'nullable', 'max:60', 'min:6'],
+            $prefix . 'name' => ['required', 'string', 'min:3', 'max:120', 'regex:/^[\pL\s.\'-]+$/u'],
+            $prefix . 'email' => ['nullable', 'max:60', 'min:6', 'email:rfc', new EmailRule()],
             $prefix . 'state' => ['required', 'max:120'],
             $prefix . 'city' => ['required', 'max:120'],
             $prefix . 'address' => ['required', 'max:120'],

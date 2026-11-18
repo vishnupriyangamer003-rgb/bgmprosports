@@ -1,12 +1,13 @@
 @php
     $title ??= $shortcode->title;
     $subtitle ??= $shortcode->subtitle;
+    $isCenter = ($shortcode->align ?? null) === 'center' || str_contains($class ?? '', 'text-center');
 @endphp
 
 @if($title || $subtitle)
-    <div @class(['tp-section-title-wrapper', $class ?? null])>
+    <div @class(['tp-section-title-wrapper', 'text-center' => $isCenter, $class ?? null])>
         @if($subtitle)
-            <span class="tp-section-title-pre">
+            <span class="tp-section-title-pre d-inline-block">
                 {!! BaseHelper::clean($subtitle) !!}
             </span>
         @endif

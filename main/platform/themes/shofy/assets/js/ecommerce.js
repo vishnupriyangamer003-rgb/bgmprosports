@@ -498,6 +498,17 @@ $(() => {
 
         loadAjaxCart(data)
 
+        if (element && (element.attr('data-bb-toggle') === 'add-to-cart' || element.data('bb-toggle') === 'add-to-cart')) {
+            element.attr('title', 'Go To Cart')
+            element.removeAttr('data-bb-toggle')
+            element.off('click').on('click', function(evt) {
+                evt.preventDefault()
+                evt.stopPropagation()
+                window.location.href = $('button[data-bb-toggle="open-mini-cart"]').first().data('url')?.replace('/ajax/cart', '/cart') || '/cart'
+            })
+            element.html(`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Go To Cart`)
+        }
+
         // Check if auto open mini cart is enabled
         if (window.themeOptions && window.themeOptions.ecommerce_auto_open_mini_cart === 'yes') {
             $('.cartmini__area').addClass('cartmini-opened')

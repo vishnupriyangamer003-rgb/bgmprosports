@@ -66,6 +66,14 @@ class WishlistController extends BaseController
 
     public function store(int|string $productId, Request $request)
     {
+        if (! auth('customer')->check()) {
+            return $this
+                ->httpResponse()
+                ->setError()
+                ->setMessage(__('Please log in or register before adding products to your wishlist.'))
+                ->setData(['redirect_url' => route('customer.login')]);
+        }
+
         if (! $productId) {
             $productId = $request->input('product_id');
         }

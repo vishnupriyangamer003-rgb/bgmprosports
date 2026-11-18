@@ -1,0 +1,505 @@
+================================================================================
+                    BGM SPORTS - COMPREHENSIVE BUG AUDIT REPORT
+================================================================================
+Generated Date : November 2026
+Workspace      : BGM Sports E-Commerce Platform (Botble CMS / Laravel Core)
+Audit Scope    : Full QA Report Consolidation (18 Bugs) + Codebase Security & Logic Audit
+Status Summary : 6 Bugs Resolved / 18 Bugs Open & Documented with Technical Fix Recommendations
+Target File    : bug/BGM_Sports_Bugs_Audit_List.txt
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. EXECUTIVE SUMMARY & DASHBOARD
+2. MODULE 1: AUTHENTICATION, ACCOUNTS & SECURITY (BUG-004, BUG-006, BUG-007, BUG-008, BUG-017, BUG-019, BUG-020)
+3. MODULE 2: SHOPPING CART, WISHLIST & CHECKOUT (BUG-001, BUG-002, BUG-021, BUG-022)
+4. MODULE 3: MARKETPLACE & VENDOR REGISTRATION (BUG-013, BUG-014, BUG-015, BUG-016, BUG-023)
+5. MODULE 4: CATALOG, SEARCH & PRODUCT FILTERING (BUG-011, BUG-012, BUG-018)
+6. MODULE 5: SYSTEM, EMAIL COMMUNICATIONS & INFRASTRUCTURE (BUG-005, BUG-009, BUG-010, BUG-024)
+7. SPRINT PRIORITIZATION & REMEDIATION ROADMAP
+
+================================================================================
+1. EXECUTIVE SUMMARY & DASHBOARD
+================================================================================
+
+Total Documented Bugs  : 24 (18 QA Excel Entries + 6 New Code Audit Discoveries)
+- Resolved Bugs        : 6  (Phone validation across 245 countries, mistyped domain & TLD validation, vendor phone constraints)
+- High / Critical Open : 8  (Cart count logic, mobile wishlist toggle, eye icon toggle, spam delivery, vendor form data leakage, forgot password lookup)
+- Medium Open          : 7  (Name alphabet validation message, price filter slider cap, search bar overlap, session timeout redirect)
+- Low Open             : 3  (Product zoom glitch, password expiry notice, customer-register.js mask cleanup)
+
+--------------------------------------------------------------------------------
+SUMMARY MATRIX
+--------------------------------------------------------------------------------
+BUG ID   | MODULE                 | SEVERITY | STATUS   | TITLE
+---------+------------------------+----------+----------+--------------------------------------------------------------
+BUG-001  | Cart & Wishlist        | High     | OPEN     | Cart badge increments with quantity instead of distinct items
+BUG-002  | Cart & Wishlist        | Medium   | OPEN     | Wishlist icon does not change visual state on mobile click
+BUG-003  | Authentication         | Medium   | OPEN     | Password eye visibility toggle icon behavior is inverted
+BUG-004  | Authentication         | High     | RESOLVED | Customer registration phone accepts invalid country digits
+BUG-005  | Email Communications   | High     | OPEN     | System emails routed to Spam/Junk folder (Missing SPF/DKIM)
+BUG-006  | Authentication         | Medium   | OPEN     | Customer Name field accepts numbers & special characters
+BUG-007  | Authentication         | High     | RESOLVED | Registration accepts mistyped email domains (e.g., gamil.c0m)
+BUG-008  | Authentication         | High     | RESOLVED | Server-side email validation misses mistyped domains & TLDs
+BUG-009  | System & Auth          | Low      | OPEN     | Password reset link expiration time not displayed
+BUG-010  | System & Auth          | Medium   | OPEN     | Session timeout does not redirect gracefully to login
+BUG-011  | Catalog & Search       | Medium   | OPEN     | Search autocomplete dropdown overlaps with navigation header
+BUG-012  | Catalog & Search       | Low      | OPEN     | Product image hover zoom glitches on Safari / mobile touch
+BUG-013  | Marketplace & Vendor   | High     | RESOLVED | Mobile number field accepts excessively long strings
+BUG-014  | Marketplace & Vendor   | High     | OPEN     | Vendor registration submits with invalid Shop Name / URL / Phone
+BUG-015  | Marketplace & Vendor   | High     | RESOLVED | Vendor phone accepts invalid digits for international codes
+BUG-016  | Marketplace & Vendor   | High     | OPEN     | Switching "Vendor" to "Customer" submits hidden vendor data
+BUG-017  | Authentication         | High     | OPEN     | Forgot Password displays "Email not in records" for valid user
+BUG-018  | Catalog & Search       | High     | OPEN     | Cricket price slider max (1,500) cuts off products up to ~1,800
+BUG-019  | Authentication (Audit) | Medium   | OPEN     | Email case sensitivity causing login / reset lookup failures
+BUG-020  | Authentication (Audit) | Low      | OPEN     | Name regex error message returns generic Laravel validation text
+BUG-021  | Cart & Checkout(Audit) | High     | OPEN     | AJAX cart response countProducts() vs count() inconsistency
+BUG-022  | Cart & Checkout(Audit) | Medium   | OPEN     | Zero-total order / full coupon checkout payment gateway bypass
+BUG-023  | Marketplace (Audit)    | Medium   | OPEN     | customer-register.js mask overrides PhoneNumberRule logic
+BUG-024  | System (Audit)         | Low      | OPEN     | Unverified customer accounts can log in and place orders
+
+
+================================================================================
+2. MODULE 1: AUTHENTICATION, ACCOUNTS & SECURITY
+================================================================================
+
+--------------------------------------------------------------------------------
+BUG-003: [Registration / Login] Click Password Visibility Toggle Displays Inverted Behavior
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN (Pending Theme Update)
+- Affected    : main/platform/core/base/resources/views/forms/fields/password.blade.php
+                main/platform/core/base/resources/views/forms/fields/password-toggle-script.blade.php
+- Description : When entering a password, the show/hide password toggle (eye icon) behaves
+                counter-intuitively. The initial state shows a slashed/closed eye (ti ti-eye-off)
+                while the text is masked. When clicked to reveal, it shows an open eye (ti ti-eye).
+                Users expect the button icon to indicate the action to be performed (e.g., an open
+                eye icon invites the user to "view" the hidden password, or vice-versa).
+- Steps to Reproduce:
+  1. Navigate to http://localhost/vichu/bgm/register or /login.
+  2. Focus on the Password input field and type a password.
+  3. Observe initial icon state and click the toggle button.
+- Expected    : The toggle state should follow standard UI convention:
+                - When password is hidden (••••••••): icon displays an open eye (Action: "Show password").
+                - When password is plain text: icon displays a slashed eye (Action: "Hide password").
+- Actual      : Slashed eye is shown when hidden; clicking reveals text with open eye, causing confusion.
+- Technical Fix Recommendation:
+  In `password.blade.php`, change initial icon to `ti ti-eye`.
+  In `password-toggle-script.blade.php`, invert the icon swap logic:
+  ```javascript
+  if (passwordField.getAttribute('type') === 'password') {
+      passwordField.setAttribute('type', 'text');
+      this.innerHTML = `{!! BaseHelper::renderIcon('ti ti-eye-off') !!}`;
+  } else {
+      passwordField.setAttribute('type', 'password');
+      this.innerHTML = `{!! BaseHelper::renderIcon('ti ti-eye') !!}`;
+  }
+  ```
+
+--------------------------------------------------------------------------------
+BUG-004: [Registration] Phone Number Digit Validation Missing for International Codes
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : RESOLVED (Verified & Committed in Branch fix-phone-digit-and-email-validation)
+- Affected    : main/platform/core/base/src/Rules/PhoneNumberRule.php
+                main/platform/core/base/resources/views/forms/fields/phone-number-script.blade.php
+                main/platform/plugins/ecommerce/src/Supports/EcommerceHelper.php
+- Description : Phone number input accepted 9 digits for US (+1) or invalid digit counts for other
+                countries without verifying against national numbering plans.
+- Resolution  : Implemented comprehensive 245-country calling code rules with domestic trunk prefix
+                auto-stripping (0, 06, 8, 80) and client-side real-time validation on blur & submit.
+
+--------------------------------------------------------------------------------
+BUG-006: [Registration] Name Field Accepts Numeric and Special Characters
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN (Partially Patched)
+- Affected    : main/platform/plugins/ecommerce/src/Http/Requests/RegisterRequest.php
+                main/platform/plugins/ecommerce/src/Forms/Fronts/Auth/RegisterForm.php
+- Description : The customer name field on registration accepts numeric digits and special symbols
+                (e.g., "John123#$"), creating corrupted user profiles.
+- Current State: Backend regex `regex:/^[\pL\s.'-]+$/u` is added to `RegisterRequest.php`, but:
+                1. No client-side real-time restriction exists on the input field.
+                2. No user-friendly custom error message is defined in `messages()`.
+- Steps to Reproduce:
+  1. Open http://localhost/vichu/bgm/register.
+  2. In the "Name" field, type "Test User 123#".
+  3. Submit the form.
+- Expected    : Form blocks non-alphabetic entry or triggers inline message: "Name should contain only alphabets."
+- Actual      : Shows generic Laravel message "The name format is invalid." No real-time client block.
+- Technical Fix Recommendation:
+  1. In `RegisterRequest::messages()`, add:
+     `'name.regex' => __('Name should contain only alphabetic letters, spaces, hyphens, and apostrophes.')`
+  2. Add client-side pattern or input sanitize listener in theme auth scripts.
+
+--------------------------------------------------------------------------------
+BUG-007 / BUG-008: [Authentication] Registration Accepts Mistyped Email Domains (e.g., gamil.c0m)
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : RESOLVED (Verified & Committed in Branch fix-phone-digit-and-email-validation)
+- Affected    : main/platform/core/base/src/Rules/EmailRule.php
+                main/platform/plugins/ecommerce/src/Http/Requests/RegisterRequest.php
+                main/platform/plugins/ecommerce/resources/views/customers/includes/email-validation-script.blade.php
+- Description : The system accepted registration and checkout with mistyped email domains such as
+                "gamil.c0m", "email.com", "user@gmial.con", resulting in undeliverable verification
+                emails and unrecoverable user accounts.
+- Resolution  : Added RFC validation (`email:rfc`), strict TLD validation (must be alphabetic/punycode,
+                rejecting digits like `.c0m`), common domain typo rejection (`gamil`, `gmial`, `hotmial`,
+                `yaho`, etc.), and real-time inline client-side validation script.
+
+--------------------------------------------------------------------------------
+BUG-017: [Forgot Password] Registered Email Rejection ("This email ID is not in our records")
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN (Pending Investigation)
+- Affected    : main/platform/plugins/ecommerce/src/Http/Controllers/Customers/ForgotPasswordController.php
+                main/platform/core/acl/src/Traits/SendsPasswordResetEmails.php
+                main/platform/plugins/ecommerce/src/Models/Customer.php
+- Description : When a user registers, receives the registration confirmation, and later requests a
+                password reset via Forgot Password, the form returns "This email ID is not in our records".
+- Root Cause Analysis:
+  1. Case Sensitivity & Whitespace: Registration stores emails without `strtolower(trim($email))`. If
+     user registers with capital letters or trailing spaces, exact DB match on password reset fails.
+  2. Unconfirmed Account Exclusion: If email verification is enabled, `Password::broker('customers')`
+     or customer repository might ignore accounts where `confirmed_at` is null.
+  3. Pre-fix Typos: Users registered before BUG-007 fix had invalid addresses stored, making recovery
+     impossible.
+- Steps to Reproduce:
+  1. Register a new user with email "User.Test@domain.com".
+  2. Navigate to Forgot Password page.
+  3. Enter "user.test@domain.com" and submit.
+- Expected    : Email is normalized, user is found, and password reset email is queued.
+- Actual      : System displays "This email ID is not in our records".
+- Technical Fix Recommendation:
+  In `SendsPasswordResetEmails::validateEmail` and `credentials()`, apply:
+  ```php
+  protected function credentials(Request $request)
+  {
+      return ['email' => strtolower(trim($request->input('email')))];
+  }
+  ```
+  Ensure `Customer` registration mutator also forces `strtolower(trim($value))`.
+
+--------------------------------------------------------------------------------
+BUG-019: [Authentication - Audit] Email Normalization Missing Across Auth Endpoints
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : Customer Login, Registration, Checkout guest email.
+- Description : Inconsistent handling of uppercase/lowercase emails across MySQL collations can cause
+                duplicate accounts or login failures depending on how the query is executed.
+
+--------------------------------------------------------------------------------
+BUG-020: [Authentication - Audit] Generic Validation Messages for Name & Phone
+--------------------------------------------------------------------------------
+- Severity    : Low
+- Status      : OPEN
+- Affected    : `RegisterRequest.php`, `CustomerAddressRequest.php`
+- Description : `messages()` method returns an empty array. Custom regex rules fall back to raw
+                Laravel keys (`validation.regex`), rendering unlocalized technical messages.
+
+
+================================================================================
+3. MODULE 2: SHOPPING CART, WISHLIST & CHECKOUT
+================================================================================
+
+--------------------------------------------------------------------------------
+BUG-001: [Cart] Header Badge Count Increments with Quantity Instead of Distinct Items
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN
+- Affected    : main/platform/plugins/ecommerce/src/Cart/Cart.php
+                main/platform/plugins/ecommerce/src/Http/Controllers/Fronts/PublicCartController.php
+                main/platform/themes/shofy/partials/header/actions.blade.php
+                main/platform/plugins/ecommerce/public/js/front-ecommerce.js
+- Description : When a customer adds 1 product with quantity 3, the header cart badge counter displays
+                "3" instead of "1". Most modern e-commerce standards require the badge counter to reflect
+                the number of distinct items (line items) in the cart.
+- Technical Findings:
+  - In `Cart.php`: `count()` returns `$content->sum('qty')` (total item units), while `countProducts()`
+    returns `$this->getContent()->count()` (distinct product lines).
+  - In `actions.blade.php`, `Cart::instance('cart')->countProducts()` is rendered on page load, but when
+    items are added via AJAX, `getDataForResponse()` or client JS may replace it with total quantity or
+    vice versa.
+- Steps to Reproduce:
+  1. Add 1 Cricket Bat to cart. Badge shows "1".
+  2. Increase quantity of the bat to 5 in mini-cart or cart page.
+  3. Observe header badge count.
+- Expected    : Cart badge remains "1" (1 distinct product type in cart).
+- Actual      : Cart badge updates to "5".
+- Technical Fix Recommendation:
+  Verify whether the business requirement strictly mandates distinct product count or total quantity.
+  If distinct count:
+  Ensure `PublicCartController::getDataForResponse` sends `'count' => $cartInstance->countProducts()`,
+  and all theme header badges bind consistently to `countProducts()`.
+
+--------------------------------------------------------------------------------
+BUG-002: [Wishlist] Icon Does Not Toggle Active Visual State on Mobile
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : main/platform/themes/shofy/assets/js/theme.js
+                main/platform/themes/shofy/views/ecommerce/includes/product-item.blade.php
+                main/platform/themes/shofy/assets/sass/components/_product.scss
+- Description : On mobile devices, clicking the heart / wishlist icon successfully adds the product
+                to the customer's wishlist via AJAX, but the icon remains in its default inactive state
+                (outline), providing no immediate visual feedback to the mobile user.
+- Root Cause Analysis:
+  `ecommerce.wishlist.added` event listener toggles the class `.active` on the clicked button:
+  `e.added ? n.addClass("active") : n.removeClass("active")`.
+  On mobile responsive product cards (`.tp-product-item-2` or mobile grids), CSS styles for
+  `button.active svg path` lack `fill: var(--tp-theme-primary)` or `fill: #ff0000`, or the event
+  targets a cloned mobile element that loses the active class.
+- Steps to Reproduce:
+  1. Open the site in mobile viewport (<= 768px).
+  2. Tap the heart icon on any product card.
+- Expected    : The heart icon turns solid red/active immediately.
+- Actual      : Product is added (wishlist counter increments), but heart remains outline/inactive.
+- Technical Fix Recommendation:
+  In theme SASS / CSS, ensure `.tp-product-action-btn-2.active svg, .tp-product-action-btn.active svg`
+  forces `fill: var(--tp-theme-primary) !important; color: var(--tp-theme-primary) !important;`.
+
+--------------------------------------------------------------------------------
+BUG-021: [Cart - Audit] Session Cart Serialization Discrepancy on Guest Checkout
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN
+- Affected    : `main/platform/plugins/ecommerce/src/Cart/Cart.php`
+- Description : When guest customers with items in cart log in during the checkout step, cart items
+                are merged. If product options or bundles exist, prices or quantities may desync
+                between session cart and database cart.
+
+--------------------------------------------------------------------------------
+BUG-022: [Checkout - Audit] Zero-Total Order Payment Bypass Handling
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : `main/platform/plugins/ecommerce/src/Http/Controllers/Fronts/PublicCheckoutController.php`
+- Description : When a 100% discount coupon is applied, payment gateway selection radio buttons
+                should be automatically hidden or disabled. If not handled cleanly, submitting the form
+                without a selected gateway may trigger a validation error.
+
+
+================================================================================
+4. MODULE 3: MARKETPLACE & VENDOR REGISTRATION
+================================================================================
+
+--------------------------------------------------------------------------------
+BUG-013 / BUG-015: [Vendor Registration] Mobile Number Field Validation
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : RESOLVED (Verified & Committed)
+- Affected    : `main/platform/core/base/src/Rules/PhoneNumberRule.php`
+                `main/platform/core/base/resources/views/forms/fields/phone-number-script.blade.php`
+- Description : Vendor registration accepted incomplete phone numbers (e.g., 3-4 digits for +91)
+                or excessively long strings without enforcing national digit limits.
+- Resolution  : Enforced strict digit count validation covering all 245 countries and auto-stripping
+                of leading trunk prefixes.
+
+--------------------------------------------------------------------------------
+BUG-014: [Vendor Registration] Form Allows Submission with Invalid Shop Name & URL
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN
+- Affected    : main/platform/plugins/marketplace/src/Http/Requests/BecomeVendorRequest.php
+                main/platform/plugins/marketplace/resources/js/customer-register.js
+- Description : When registering as a vendor, the form allows submission with invalid Shop Name,
+                invalid Shop URL characters, or unverified shop slugs.
+- Steps to Reproduce:
+  1. Open http://localhost/vichu/bgm/register and select "I am a vendor".
+  2. Enter special symbols or empty values in Shop Name / URL.
+  3. Submit the form.
+- Expected    : Inline validation stops submission; AJAX URL availability check blocks until resolved.
+- Actual      : Form submits and creates account with empty/broken store profile.
+- Technical Fix Recommendation:
+  In `BecomeVendorRequest.php`, ensure:
+  - `shop_name`: `['required', 'string', 'min:3', 'max:120', 'unique:mp_stores,name']`
+  - `shop_url`: `['required', 'string', 'alpha_dash', 'min:3', 'max:60', 'unique:mp_stores,url']`
+
+--------------------------------------------------------------------------------
+BUG-016: [Registration] Switching "I am a vendor" to "I am a customer" Submits Hidden Vendor Fields
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN (Needs Verification & Backend Safeguard)
+- Affected    : main/platform/plugins/marketplace/resources/js/customer-register.js
+                main/platform/plugins/marketplace/src/Http/Requests/RegisterRequest.php
+- Description : A user begins filling out vendor fields ("Shop Name", "Shop URL"), but changes their
+                mind and selects "I am a customer". The vendor fields slide up (hidden), but the input
+                values remain populated and may be sent in the POST payload.
+- Root Cause Analysis:
+  In `customer-register.js`:
+  ```javascript
+  function syncVendorFields(form) {
+      var checked = form.find('input[name="is_vendor"]:checked').val();
+      var wrapper = form.find('[data-bb-toggle="vendor-info"]');
+      if (checked == 1) {
+          wrapper.find(vendorFields).prop('disabled', false);
+      } else {
+          wrapper.find(vendorFields).val('').prop('disabled', true);
+      }
+  }
+  ```
+  While `customer-register.js` attempted to disable the fields, if the user toggles via standard
+  radio click before the script initializes, or if the form is submitted via enter key, backend
+  request receives `is_vendor = 0` but creates orphaned store records or fails with validation errors.
+- Technical Fix Recommendation:
+  In backend `RegisterController` or `RegisterRequest`:
+  If `$request->input('is_vendor') != 1`, explicitly purge all vendor-related keys (`shop_name`,
+  `shop_url`, `shop_phone`) from `$request` before processing.
+
+--------------------------------------------------------------------------------
+BUG-023: [Marketplace - Audit] customer-register.js Hardcoded 10-Digit Mask Conflict
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : `main/platform/plugins/marketplace/resources/js/customer-register.js`
+- Description : Lines 25-30 of `customer-register.js` contains a legacy script:
+                `var max = (dial === '+1' || dial === '+91') ? 10 : 15;`
+                This hardcoded 10/15 check conflicts with the comprehensive 245-country rules now
+                defined in `phone-number-script.blade.php`.
+- Technical Fix Recommendation:
+  Remove the legacy input listener from `customer-register.js` to let `phone-number-script.blade.php`
+  manage digit constraints universally.
+
+
+================================================================================
+5. MODULE 4: CATALOG, SEARCH & PRODUCT FILTERING
+================================================================================
+
+--------------------------------------------------------------------------------
+BUG-018: [Product Listing - Cricket] Price Range Filter Slider Max (1,500) Cuts Off Products Up to ~1,800
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN
+- Affected    : main/platform/plugins/ecommerce/src/Supports/EcommerceHelper.php (Line 1423)
+                main/platform/plugins/ecommerce/resources/views/themes/includes/filters/price.blade.php
+- Description : On the Cricket category page, the sidebar price range slider caps out at 1,500.
+                However, cricket equipment in this category includes items priced up to ~1,800.
+                Consequently, users cannot filter or view products priced between 1,500 and 1,800.
+- Root Cause Analysis:
+  1. Setting Override: In `EcommerceHelper::getProductMaxPrice()`, if the admin setting
+     `max_product_price_for_filter` is defined in Admin Panel > Ecommerce > Settings, it returns
+     that hardcoded integer (e.g. 1500) rather than dynamic database max price.
+  2. Cache Stale: `Cache::remember('ecommerce_product_price_range_...', Carbon::now()->addHour())`
+     caches the max price for 1 hour. If higher-priced products were added recently, the cache
+     remains at the old price.
+  3. Variation Price Exclusion: `Product::query()->max('price')` checks only the parent product's
+     `price` column. If variations (sizes, willow grades) have prices up to 1,800 while the parent
+     product base price is 1,500, the slider maximum ignores variation prices!
+- Steps to Reproduce:
+  1. Open http://localhost/vichu/bgm/product-categories/cricket.
+  2. Observe the price slider max value. It displays 1,500.
+  3. Notice products listed with prices such as 1,750 or 1,800.
+- Expected    : Price slider max dynamically scales to the highest priced item (e.g., 2,000).
+- Actual      : Slider is capped at 1,500, cutting off premium products.
+- Technical Fix Recommendation:
+  In `EcommerceHelper.php::getProductMaxPrice()`:
+  - Ensure query checks both `ec_products.price` and variation prices if variations exist.
+  - Round up to the next ceiling hundreds (e.g., `ceil($maxPrice / 100) * 100`).
+  - Clear the price range cache when products are created/updated in `ProductObserver`.
+
+--------------------------------------------------------------------------------
+BUG-011: [Catalog & Search] Search Autocomplete Dropdown Overlaps with Navigation Header
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : `main/platform/themes/shofy/partials/header/search-bar.blade.php`
+- Description : When typing in the quick search input, the autocomplete dropdown result panel
+                appears behind or awkward z-index collision with the sticky navigation header on
+                certain screen resolutions.
+- Technical Fix Recommendation:
+  Adjust `.bb-quick-search-results` or `.tp-header-search-result` CSS:
+  Set `z-index: 9999; position: absolute; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);`.
+
+--------------------------------------------------------------------------------
+BUG-012: [Catalog] Product Image Zoom on Hover Glitches on Safari & Mobile Touch
+--------------------------------------------------------------------------------
+- Severity    : Low
+- Status      : OPEN
+- Affected    : `main/platform/themes/shofy/assets/js/theme.js`
+- Description : On touch devices or WebKit/Safari browsers, tapping a product image triggers mouseover
+                zoom calculations that jitter or misalign image bounding boxes.
+
+
+================================================================================
+6. MODULE 5: SYSTEM, EMAIL COMMUNICATIONS & INFRASTRUCTURE
+================================================================================
+
+--------------------------------------------------------------------------------
+BUG-005: [Email Notifications] System-Generated Emails Delivered to Spam / Junk Folder
+--------------------------------------------------------------------------------
+- Severity    : High
+- Status      : OPEN
+- Affected    : `.env` (MAIL_* Configuration), DNS Records (SPF, DKIM, DMARC)
+- Description : Account verification, welcome, and order confirmation emails are routed to the
+                recipient's Spam/Junk folder instead of Primary Inbox across Gmail and Outlook.
+- Root Cause Analysis:
+  1. Local environment uses unauthenticated `mail` or `sendmail` driver without TLS authentication.
+  2. The `MAIL_FROM_ADDRESS` does not match the server's sending domain.
+  3. The sending domain lacks valid SPF (`v=spf1 include:... ~all`), DKIM, and DMARC DNS records.
+- Technical Fix Recommendation:
+  - Configure production SMTP service (Amazon SES, SendGrid, Mailgun, or Postmark) in `.env`:
+    `MAIL_MAILER=smtp`
+    `MAIL_HOST=smtp.mailgun.org`
+    `MAIL_PORT=587`
+    `MAIL_ENCRYPTION=tls`
+  - Ensure sender domain has SPF and DKIM public keys configured in DNS.
+
+--------------------------------------------------------------------------------
+BUG-009: [Authentication] Password Reset Link Expiration Time Not Stated
+--------------------------------------------------------------------------------
+- Severity    : Low
+- Status      : OPEN
+- Affected    : `main/platform/plugins/ecommerce/resources/views/emails/password-reminder.blade.php`
+- Description : Password reset email contains a reset link but does not inform the user that the link
+                expires in 60 minutes, leading to expired token errors if accessed later.
+
+--------------------------------------------------------------------------------
+BUG-010: [System] Session Timeout Does Not Redirect Gracefully to Login
+--------------------------------------------------------------------------------
+- Severity    : Medium
+- Status      : OPEN
+- Affected    : `main/app/Exceptions/Handler.php`, `Authenticate.php` middleware
+- Description : When an authenticated customer's session expires, submitting an action or navigating
+                triggers an HTTP 419 Page Expired CSRF error rather than redirecting with a notice
+                "Your session has expired. Please log in again."
+
+--------------------------------------------------------------------------------
+BUG-024: [Customer - Audit] Unverified Customer Account Ordering Permissions
+--------------------------------------------------------------------------------
+- Severity    : Low
+- Status      : OPEN
+- Affected    : `EcommerceHelper::isEnableEmailVerification()`
+- Description : If email verification is enabled, customers who have not clicked their verification
+                link can still log in and complete checkout. Verify whether unconfirmed customers
+                should be restricted to read-only until verification is complete.
+
+
+================================================================================
+7. SPRINT PRIORITIZATION & REMEDIATION ROADMAP
+================================================================================
+
+PHASE 1: IMMEDIATE CRITICAL FIXES (SPRINT 1)
+---------------------------------------------
+1. BUG-003: Fix inverted password visibility toggle icon in `password.blade.php` and `password-toggle-script.blade.php`.
+2. BUG-001: Synchronize cart count logic so distinct item count is consistent between initial page render and AJAX updates.
+3. BUG-018: Fix Cricket price slider max cap in `EcommerceHelper.php` to include variation prices and clear price range cache.
+4. BUG-014 & BUG-016: Enforce vendor registration validation and purge vendor fields if `is_vendor` is unchecked.
+5. BUG-023: Remove legacy 10-digit hardcoded mask from `customer-register.js`.
+
+PHASE 2: AUTHENTICATION & UI POLISHING (SPRINT 2)
+--------------------------------------------------
+1. BUG-006 & BUG-020: Add custom name validation message and client-side alphanumeric blocker.
+2. BUG-002: Add CSS active state styling for mobile wishlist heart button.
+3. BUG-017 & BUG-019: Normalize emails (`strtolower(trim())`) across login, registration, and password recovery.
+4. BUG-011: Fix search autocomplete dropdown z-index in header.
+
+PHASE 3: INFRASTRUCTURE & PRODUCTION HARDENING (SPRINT 3)
+---------------------------------------------------------
+1. BUG-005: Set up authenticated transactional SMTP with SPF/DKIM/DMARC compliance.
+2. BUG-010: Graceful HTTP 419 session expiration handling with automatic login redirection.
+3. BUG-009: Add expiration notice (60 mins) to password reset email templates.
+
+================================================================================
+END OF REPORT - BGM SPORTS QUALITY ASSURANCE & ENGINEERING
+================================================================================

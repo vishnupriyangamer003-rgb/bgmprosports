@@ -511,6 +511,16 @@ class MainCheckout {
             })
 
         document.dispatchEvent(new CustomEvent('checkout:init'))
+
+        $(document).on('input keyup change', 'input.form-control, select.form-control', (event) => {
+            const $target = $(event.currentTarget)
+            if ($target.val() && $target.val().length > 0) {
+                $target.removeClass('is-invalid')
+                $target.closest('.form-group').removeClass('field-is-invalid has-error')
+                $target.siblings('.invalid-feedback').remove()
+                $target.closest('.form-group').find('.invalid-feedback, .text-danger').remove()
+            }
+        })
     }
 }
 

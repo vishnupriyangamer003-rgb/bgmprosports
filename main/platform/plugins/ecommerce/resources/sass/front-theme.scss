@@ -543,18 +543,25 @@ body,
 .customer-address-payment-form,
 .billing-address-form-wrapper,
 .customer-tax-information-form,
-.customer-info-form {
+.customer-info-form,
+#register-an-account-wrapper,
+.password-group {
     .form-input-wrapper.select--arrow label,
-    .form-control:not(:placeholder-shown):focus + label,
+    .form-control:focus + label,
+    .form-control:not(:placeholder-shown) + label,
     .form-control:-webkit-autofill + label,
+    .form-control.is-valid + label,
+    .form-control.is-invalid + label,
     .form-control.is-valid + .invalid-feedback + label,
     .form-control.is-invalid + .invalid-feedback + label,
+    .form-control:not(:placeholder-shown):focus + label,
     .form-control:not(:placeholder-shown):valid + label {
         font-size: 12px;
         top: -7px;
         inset-inline-start: 10px;
         background: #ffffff;
         padding: 0 5px 0 5px;
+        z-index: 2;
     }
 
     .form-input-wrapper {

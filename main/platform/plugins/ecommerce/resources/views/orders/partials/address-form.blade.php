@@ -382,6 +382,7 @@
                                     name="password"
                                     type="password"
                                     autocomplete="new-password"
+                                    placeholder=" "
                                 >
                                 <label for="password">{{ __('Password') }}</label>
                             </div>
@@ -398,6 +399,7 @@
                                     name="password_confirmation"
                                     type="password"
                                     autocomplete="password-confirmation"
+                                    placeholder=" "
                                 >
                                 <label for="password-confirm">{{ __('Password confirmation') }}</label>
                             </div>

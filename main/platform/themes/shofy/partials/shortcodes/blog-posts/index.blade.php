@@ -5,7 +5,14 @@
                 {!! Theme::partial('section-title', compact('shortcode')) !!}
             </div>
             <div class="col-xl-8 col-md-6">
-                @if(($buttonLabel = $shortcode->button_label) && ($buttonUrl = $shortcode->button_url ?: get_blog_page_url()))
+                @php
+                    $buttonLabel = $shortcode->button_label;
+                    $buttonUrl = $shortcode->button_url ?: get_blog_page_url();
+                    if (! $buttonUrl || $buttonUrl === '#' || $buttonUrl === '/blog' || $buttonUrl === 'blog' || $buttonUrl === BaseHelper::getHomepageUrl()) {
+                        $buttonUrl = route('public.blog');
+                    }
+                @endphp
+                @if($buttonLabel)
                     <div class="tp-blog-more-wrapper d-flex justify-content-md-end">
                         <div class="tp-blog-more text-md-end">
                             <a href="{{ $buttonUrl }}" class="tp-btn tp-btn-2 tp-btn-blue">

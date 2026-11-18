@@ -158,6 +158,7 @@ export class DiscountManagement {
                         $('.coupon-error-msg .text-danger').html(sanitizeHTML(message))
                         showNotice('error', message);
                         currentTarget.find('.btn-spinner').remove()
+                        currentTarget.prop('disabled', false)
                     }
 
                     $('html, body').animate({
@@ -176,9 +177,14 @@ export class DiscountManagement {
                             $('.coupon-error-msg .text-danger').text(data.responseJSON.message)
                         }
                     } else {
-                        $('.coupon-error-msg .text-danger').text(data.status.text)
+                        $('.coupon-error-msg .text-danger').text(data.status?.text || 'Invalid coupon code')
                     }
-                    currentTarget.find('i').remove()
+                    currentTarget.find('.btn-spinner, i').remove()
+                    currentTarget.prop('disabled', false)
+                },
+                complete: () => {
+                    currentTarget.find('.btn-spinner').remove()
+                    currentTarget.prop('disabled', false)
                 },
             })
         })

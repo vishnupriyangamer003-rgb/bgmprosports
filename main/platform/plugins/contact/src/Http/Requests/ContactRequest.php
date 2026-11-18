@@ -41,14 +41,22 @@ class ContactRequest extends Request
         if (! $this->filled('phone') && $this->filled('phone_display')) {
             $this->merge(['phone' => $this->input('phone_display')]);
         }
+
+        if ($this->filled('email')) {
+            $this->merge(['email' => strtolower(trim((string) $this->input('email')))]);
+        }
+
+        if ($this->filled('name')) {
+            $this->merge(['name' => trim(preg_replace('/\s+/', ' ', (string) $this->input('name')))]);
+        }
     }
 
     public function rules(): array
     {
         $rules = [
-            'name' => ['required', 'string', 'max:40'],
-            'email' => ['nullable', new EmailRule(), 'max:80'],
-            'content' => ['required', 'string', 'max:10000'],
+            'name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[\pL\s.\'-]+$/u'],
+            'email' => ['nullable', 'max:80', 'email:rfc', new EmailRule()],
+            'content' => ['required', 'string', 'min:3', 'max:10000'],
             'phone' => ['nullable', new PhoneNumberRule()],
             'address' => ['nullable', 'string', 'max:500'],
             'subject' => ['nullable', 'string', 'max:500'],
@@ -169,6 +177,7 @@ class ContactRequest extends Request
     public function messages(): array
     {
         return [
+            'name.regex' => trans('plugins/contact::contact.name_regex') ?: 'The name must only contain letters, spaces, hyphens, and dots.',
             'agree_terms_and_policy.accepted' => trans('plugins/contact::contact.must_agree_terms'),
         ];
     }

@@ -28,6 +28,24 @@ class CheckoutRequest extends Request
         if ($this->has('billing_address')) {
             $this->preparePhoneFieldForCheckout('billing_address');
         }
+
+        if ($this->has('address.email') && is_string($this->input('address.email'))) {
+            $address = $this->input('address', []);
+            $address['email'] = strtolower(trim((string) $address['email']));
+            $this->merge(['address' => $address]);
+        }
+
+        if ($this->has('billing_address.email') && is_string($this->input('billing_address.email'))) {
+            $billingAddress = $this->input('billing_address', []);
+            $billingAddress['email'] = strtolower(trim((string) $billingAddress['email']));
+            $this->merge(['billing_address' => $billingAddress]);
+        }
+
+        if ($this->has('tax_information.company_email') && is_string($this->input('tax_information.company_email'))) {
+            $taxInfo = $this->input('tax_information', []);
+            $taxInfo['company_email'] = strtolower(trim((string) $taxInfo['company_email']));
+            $this->merge(['tax_information' => $taxInfo]);
+        }
     }
 
     protected function mergeSavedAddressData(): void
@@ -148,6 +166,7 @@ class CheckoutRequest extends Request
                     'string',
                     'min:3',
                     'max:20',
+                    'regex:/^[A-Za-z0-9-]+$/',
                 ],
                 'tax_information.company_name' => [
                     'required_if:with_tax_information,1',
@@ -166,6 +185,8 @@ class CheckoutRequest extends Request
                 'tax_information.company_email' => [
                     'required_if:with_tax_information,1',
                     'nullable',
+                    'max:80',
+                    'email:rfc',
                     new EmailRule(),
                 ],
             ]);
@@ -175,11 +196,11 @@ class CheckoutRequest extends Request
             $isDigitalOnly = EcommerceHelper::countDigitalProducts($products) == $products->count();
 
             if ($isDigitalOnly) {
-                $rules['address.name'] = 'required|min:3|max:120';
-                $rules['address.email'] = 'required|email|max:60|min:6';
+                $rules['address.name'] = ['required', 'string', 'min:3', 'max:120', 'regex:/^[\pL\s.\'-]+$/u'];
+                $rules['address.email'] = ['required', 'email:rfc', new EmailRule(), 'max:60', 'min:6'];
             } else {
                 $rules = array_merge($rules, EcommerceHelper::getCustomerAddressValidationRules('address.'));
-                $rules['address.email'] = 'required|email|max:60|min:6';
+                $rules['address.email'] = ['required', 'email:rfc', new EmailRule(), 'max:60', 'min:6'];
             }
         }
 
@@ -187,8 +208,8 @@ class CheckoutRequest extends Request
         if ($isCreateAccount) {
             $rules['password'] = ['required', 'string', 'min:6'];
             $rules['password_confirmation'] = 'required|same:password';
-            $rules['address.email'] = ['required', new EmailRule(), Rule::unique((new Customer())->getTable(), 'email')];
-            $rules['address.name'] = 'required|min:3|max:120';
+            $rules['address.email'] = ['required', 'email:rfc', new EmailRule(), Rule::unique((new Customer())->getTable(), 'email')];
+            $rules['address.name'] = ['required', 'string', 'min:3', 'max:120', 'regex:/^[\pL\s.\'-]+$/u'];
         }
 
         $availableMandatoryFields = EcommerceHelper::getEnabledMandatoryFieldsAtCheckout();
@@ -228,6 +249,9 @@ class CheckoutRequest extends Request
         return apply_filters(PROCESS_CHECKOUT_MESSAGES_REQUEST_ECOMMERCE, [
             'agree_terms_and_policy.required' => trans('plugins/ecommerce::ecommerce.agree_terms_and_policy_error'),
             'agree_terms_and_policy.accepted' => trans('plugins/ecommerce::ecommerce.agree_terms_and_policy_error'),
+            'address.name.regex' => __('The shipping name must only contain letters, spaces, hyphens, and dots.'),
+            'billing_address.name.regex' => __('The billing name must only contain letters, spaces, hyphens, and dots.'),
+            'tax_information.company_tax_code.regex' => __('The tax code format is invalid. It should contain only alphanumeric characters and hyphens.'),
         ]);
     }
 

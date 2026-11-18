@@ -49,6 +49,16 @@
             color: var(--tp-theme-primary);
             display: inline-block;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        &.text-center &-pre,
+        .text-center & &-pre {
+            display: block;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
         }
     }
 }
