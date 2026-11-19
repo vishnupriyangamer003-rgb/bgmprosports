@@ -735,10 +735,17 @@ class EcommerceHelper
     {
         $rules = [
             $prefix . 'name' => ['required', 'string', 'min:3', 'max:120', 'regex:/^[\pL\s.\'-]+$/u'],
-            $prefix . 'email' => ['nullable', 'max:60', 'min:6', 'email:rfc', new EmailRule()],
+            $prefix . 'email' => [
+                'nullable',
+                'string',
+                'max:120',
+                'min:6',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/',
+                new EmailRule(),
+            ],
             $prefix . 'state' => ['required', 'max:120'],
             $prefix . 'city' => ['required', 'max:120'],
-            $prefix . 'address' => ['required', 'max:120'],
+            $prefix . 'address' => ['required', 'string', 'min:3', 'max:255'],
             $prefix . 'phone' => [...explode('|', $this->getPhoneValidationRule()), new PhoneNumberRule()],
         ];
 
@@ -766,7 +773,22 @@ class EcommerceHelper
         }
 
         if ($this->isZipCodeEnabled()) {
-            $rules[$prefix . 'zip_code'] = ['required', ...BaseHelper::getZipcodeValidationRule(true)];
+            $rules[$prefix . 'zip_code'] = [
+                'required',
+                'string',
+                'min:3',
+                'max:10',
+                'regex:/^[a-zA-Z0-9\s-]+$/',
+                function ($attribute, $value, $fail) use ($prefix) {
+                    $country = request()->input($prefix . 'country');
+                    if ($country === 'IN' || (! $country && ! $this->isUsingInMultipleCountries())) {
+                        $digits = preg_replace('/\D/', '', (string) $value);
+                        if (strlen($digits) !== 6 || ! preg_match('/^[1-9][0-9]{5}$/', (string) $value)) {
+                            $fail(__('Please enter a valid 6-digit PIN code for India.'));
+                        }
+                    }
+                },
+            ];
         }
 
         $availableMandatoryFields = $this->getEnabledMandatoryFieldsAtCheckout();

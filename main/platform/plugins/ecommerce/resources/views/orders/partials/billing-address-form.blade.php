@@ -90,6 +90,8 @@
                     name="billing_address[name]"
                     autocomplete="family-name"
                     type="text"
+                    minlength="3"
+                    maxlength="120"
                     value="{{ old('billing_address.name', Arr::get($sessionCheckoutData, 'billing_address.name')) ?: (auth('customer')->check() ? auth('customer')->user()->name : null) }}"
                 >
                 <label for='billing-address-name'>{{ __('Full Name') }}</label>
@@ -107,6 +109,7 @@
                             name="billing_address[email]"
                             autocomplete="email"
                             type="email"
+                            maxlength="60"
                             value="{{ old('billing_address.email', Arr::get($sessionCheckoutData, 'billing_address.email')) ?: (auth('customer')->check() ? auth('customer')->user()->email : null) }}"
                         >
                         <label for='billing-address-email'>{{ __('Email') }}</label>
@@ -287,6 +290,8 @@
                     name="billing_address[address]"
                     autocomplete="address"
                     type="text"
+                    minlength="3"
+                    maxlength="255"
                     value="{{ old('billing_address.address', Arr::get($sessionCheckoutData, 'billing_address.address')) }}"
                 >
                 <label for='billing-address-address'>{{ __('Address') }}</label>
@@ -303,6 +308,7 @@
                         name="billing_address[zip_code]"
                         autocomplete="postal-code"
                         type="text"
+                        maxlength="10"
                         value="{{ old('billing_address.zip_code', Arr::get($sessionCheckoutData, 'billing_address.zip_code')) }}"
                     >
                     <label for='billing-address-zip-code'>{{ __('Zip code') }}</label>

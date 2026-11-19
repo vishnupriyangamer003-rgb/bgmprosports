@@ -13,7 +13,11 @@
         @endif
         @if($title)
             <h3 class="section-title tp-section-title">
-                @include(Theme::getThemeNamespace('partials.section-title-inner'))
+                @if($isCenter)
+                    {!! BaseHelper::clean($title) !!}
+                @else
+                    @include(Theme::getThemeNamespace('partials.section-title-inner'))
+                @endif
             </h3>
         @endif
     </div>

@@ -26,8 +26,8 @@ class NewsletterRequest extends Request
             'email' => [
                 'required',
                 'string',
-                'email:rfc',
                 'max:120',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/',
                 new EmailRule(),
                 Rule::unique((new Newsletter())->getTable())->where(function (Builder $query): void {
                     $query->where('status', NewsletterStatusEnum::SUBSCRIBED);

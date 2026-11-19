@@ -15,21 +15,23 @@ class HookServiceProvider extends ServiceProvider
     {
         $this->app['events']->listen(RouteMatched::class, function (): void {
             if (defined('THEME_FRONT_FOOTER')) {
-                Theme::asset()
-                    ->container('footer')
-                    ->usePath(false)
-                    ->add(
-                        'sale-popup-js',
-                        asset('vendor/core/plugins/sale-popup/js/sale-popup.js'),
-                        ['jquery'],
-                        [],
-                        '1.2.1'
-                    );
+                if ((bool) setting('sale_popup_enabled', 0)) {
+                    Theme::asset()
+                        ->container('footer')
+                        ->usePath(false)
+                        ->add(
+                            'sale-popup-js',
+                            asset('vendor/core/plugins/sale-popup/js/sale-popup.js'),
+                            ['jquery'],
+                            [],
+                            '1.2.1'
+                        );
+                }
 
                 add_filter(
                     THEME_FRONT_FOOTER,
                     function (?string $html) {
-                        if (! setting('sale_popup_enabled', 1)) {
+                        if (! (bool) setting('sale_popup_enabled', 0)) {
                             return $html;
                         }
 

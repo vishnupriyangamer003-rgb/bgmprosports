@@ -55,15 +55,21 @@ class ContactRequest extends Request
     {
         $rules = [
             'name' => ['required', 'string', 'min:2', 'max:60', 'regex:/^[\pL\s.\'-]+$/u'],
-            'email' => ['nullable', 'max:80', 'email:rfc', new EmailRule()],
-            'content' => ['required', 'string', 'min:3', 'max:10000'],
-            'phone' => ['nullable', new PhoneNumberRule()],
-            'address' => ['nullable', 'string', 'max:500'],
-            'subject' => ['nullable', 'string', 'max:500'],
+            'email' => [
+                'required',
+                'string',
+                'max:120',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/',
+                new EmailRule(),
+            ],
+            'content' => ['required', 'string', 'min:5', 'max:10000'],
+            'phone' => ['required', 'string', new PhoneNumberRule()],
+            'address' => ['nullable', 'string', 'min:3', 'max:500'],
+            'subject' => ['nullable', 'string', 'min:2', 'max:255'],
         ];
 
         if (setting('contact_form_show_terms_checkbox', true)) {
-            $rules['agree_terms_and_policy'] = ['required', 'accepted:1'];
+            $rules['agree_terms_and_policy'] = ['required', 'accepted'];
         }
 
         try {
@@ -177,8 +183,16 @@ class ContactRequest extends Request
     public function messages(): array
     {
         return [
-            'name.regex' => trans('plugins/contact::contact.name_regex') ?: 'The name must only contain letters, spaces, hyphens, and dots.',
-            'agree_terms_and_policy.accepted' => trans('plugins/contact::contact.must_agree_terms'),
+            'name.required' => 'Please enter your name.',
+            'name.min' => 'The name must be at least 2 characters.',
+            'name.regex' => 'The name must only contain letters, spaces, hyphens, and dots.',
+            'email.required' => 'Please enter your email address.',
+            'email.regex' => 'The email format is invalid. Please enter a valid email address with a valid domain extension.',
+            'phone.required' => 'Please enter your phone number.',
+            'content.required' => 'Please enter your message.',
+            'content.min' => 'The message must be at least 5 characters.',
+            'agree_terms_and_policy.required' => trans('plugins/contact::contact.must_agree_terms') ?: 'You must agree to the Terms and Privacy Policy before submitting.',
+            'agree_terms_and_policy.accepted' => trans('plugins/contact::contact.must_agree_terms') ?: 'You must agree to the Terms and Privacy Policy before submitting.',
         ];
     }
 
@@ -240,7 +254,7 @@ class ContactRequest extends Request
 
     protected function alwaysMandatoryFields(): array
     {
-        $mandatoryFields = ['name', 'content'];
+        $mandatoryFields = ['name', 'email', 'phone', 'content'];
 
         if (setting('contact_form_show_terms_checkbox', true)) {
             $mandatoryFields[] = 'agree_terms_and_policy';

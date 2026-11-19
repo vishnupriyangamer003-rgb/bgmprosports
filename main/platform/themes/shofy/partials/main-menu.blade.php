@@ -1,9 +1,13 @@
 <ul {!! $options !!}>
     @foreach ($menu_nodes->loadMissing('metadata') as $key => $row)
-        <li @class(['has-dropdown' => $row->has_child])>
+        @php
+            $isSale = strtolower(trim((string) $row->title)) === 'sale' || \Illuminate\Support\Str::contains(strtolower((string) $row->url), 'sale');
+        @endphp
+        <li @class(['has-dropdown' => $row->has_child, 'menu-item-sale' => $isSale])>
             <a href="{{ url($row->url) }}"
                title="{{ $row->title }}"
                @if ($row->target !== '_self') target="{{ $row->target }}" rel="noopener noreferrer" @endif
+               @class(['menu-link-sale' => $isSale])
             >
                 {!! $row->icon_html !!}
 

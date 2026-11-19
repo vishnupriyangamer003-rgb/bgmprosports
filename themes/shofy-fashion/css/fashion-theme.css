@@ -1,1 +1,81 @@
 .tp-category-thumb-2 img{width:100%;height:100%}.tp-instagram-icon-2 a{width:100%;height:auto;padding:16px 20px;line-height:normal}.tp-blog-thumb-2 img{height:325px;-o-object-fit:cover;object-fit:cover}.tp-featured-thumb.include-bg{background-position:100%;background-repeat:no-repeat;background-size:50%}.tp-featured-content{max-width:50%}.tp-product-thumb-2{background-color:#f2f3f5}
+.tp-section-title-wrapper-2.text-center, .tp-section-title-wrapper.text-center { text-align: center !important; margin-left: auto !important; margin-right: auto !important; }
+.tp-section-title-wrapper-2.text-center .tp-section-title-pre-2, .tp-section-title-wrapper.text-center .tp-section-title-pre { display: inline-block !important; text-align: center !important; margin: 0 auto !important; }
+.tp-section-title-wrapper-2.text-center .tp-section-title-2, .tp-section-title-wrapper.text-center .tp-section-title { display: block !important; text-align: center !important; margin: 0 auto !important; }
+.tp-section-title-wrapper-2.text-center svg, .tp-section-title-wrapper.text-center svg { display: none !important; }
+
+/* SALE Navigation Link High-Impact Red Flashing Effect */
+.main-menu > nav > ul > li.menu-item-sale > a,
+.main-menu > nav > ul > li > a[href*="/sale"],
+.tp-main-menu-content ul li.menu-item-sale > a,
+.tp-main-menu-content ul li > a[href*="/sale"],
+.menu-link-sale {
+    color: #ff1744 !important;
+    font-weight: 800 !important;
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    animation: navSaleFlashPulse 1.6s infinite ease-in-out !important;
+}
+
+/* Flashing HOT Neon Badge */
+.main-menu > nav > ul > li.menu-item-sale > a::after,
+.main-menu > nav > ul > li > a[href*="/sale"]::after,
+.tp-main-menu-content ul li.menu-item-sale > a::after,
+.tp-main-menu-content ul li > a[href*="/sale"]::after,
+.menu-link-sale::after {
+    content: "HOT";
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #ff1744 0%, #b71c1c 100%) !important;
+    padding: 2px 5px !important;
+    border-radius: 4px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 8px rgba(255, 23, 68, 0.8) !important;
+    vertical-align: middle;
+    animation: navSaleBadgePulse 1.6s infinite alternate ease-in-out !important;
+}
+
+/* Hover transition */
+.main-menu > nav > ul > li.menu-item-sale > a:hover,
+.tp-main-menu-content ul li > a[href*="/sale"]:hover,
+.menu-link-sale:hover {
+    color: #d50000 !important;
+    transform: scale(1.08) !important;
+}
+
+/* Mobile Menu SALE Highlighting */
+.tp-main-menu-mobile ul li.menu-item-sale > a,
+.tp-main-menu-mobile ul li > a[href*="/sale"] {
+    color: #ff1744 !important;
+    font-weight: 700 !important;
+}
+
+/* Animation Keyframes */
+@keyframes navSaleFlashPulse {
+    0%, 100% {
+        color: #ff1744;
+        text-shadow: 0 0 3px rgba(255, 23, 68, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        color: #d50000;
+        text-shadow: 0 0 12px rgba(255, 23, 68, 0.9), 0 0 20px rgba(255, 23, 68, 0.6);
+        transform: scale(1.06);
+    }
+}
+
+@keyframes navSaleBadgePulse {
+    0% {
+        box-shadow: 0 0 4px rgba(255, 23, 68, 0.4);
+        transform: translateY(-1px) scale(0.96);
+    }
+    100% {
+        box-shadow: 0 0 14px rgba(255, 23, 68, 1), 0 0 22px rgba(255, 23, 68, 0.7);
+        transform: translateY(-1px) scale(1.08);
+    }
+}

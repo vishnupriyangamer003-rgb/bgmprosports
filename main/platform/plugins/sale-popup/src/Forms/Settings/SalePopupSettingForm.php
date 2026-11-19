@@ -36,7 +36,7 @@ class SalePopupSettingForm extends SettingForm
                     OnOffCheckboxField::class,
                     CheckboxFieldOption::make()
                         ->label(trans('plugins/sale-popup::sale-popup.enable'))
-                        ->value($salePopupHelper->getSetting('enabled', true))
+                        ->value($salePopupHelper->getSetting('enabled', false))
                         ->helperText(trans('plugins/sale-popup::sale-popup.enable_helper'))
                         ->attributes([
                             'data-bb-toggle' => 'collapse',
@@ -48,7 +48,7 @@ class SalePopupSettingForm extends SettingForm
                 'openWrapper',
                 HtmlField::class,
                 [
-                    'html' => sprintf('<div id="sale-popup-setting" style="display: %s">', $salePopupHelper->getSetting('enabled', true) ? 'block' : 'none'),
+                    'html' => sprintf('<div id="sale-popup-setting" style="display: %s">', $salePopupHelper->getSetting('enabled', false) ? 'block' : 'none'),
                 ]
             )
             ->when($this->getRequest()->isNotFilled('ref_lang'), function (FormAbstract $form) use ($salePopupHelper): void {

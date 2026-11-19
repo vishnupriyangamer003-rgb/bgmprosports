@@ -250,7 +250,14 @@ class CheckoutRequest extends Request
             'agree_terms_and_policy.required' => trans('plugins/ecommerce::ecommerce.agree_terms_and_policy_error'),
             'agree_terms_and_policy.accepted' => trans('plugins/ecommerce::ecommerce.agree_terms_and_policy_error'),
             'address.name.regex' => __('The shipping name must only contain letters, spaces, hyphens, and dots.'),
+            'billing_address.name.required' => __('Please enter billing full name.'),
+            'billing_address.name.min' => __('The billing name must be at least 3 characters.'),
             'billing_address.name.regex' => __('The billing name must only contain letters, spaces, hyphens, and dots.'),
+            'billing_address.email.regex' => __('The billing email format is invalid. Please enter a valid email address with a valid domain extension.'),
+            'billing_address.address.required' => __('Please enter billing address.'),
+            'billing_address.address.min' => __('The billing address must be at least 3 characters.'),
+            'billing_address.zip_code.required' => __('Please enter billing zip/PIN code.'),
+            'billing_address.zip_code.regex' => __('The billing zip/PIN code format is invalid.'),
             'tax_information.company_tax_code.regex' => __('The tax code format is invalid. It should contain only alphanumeric characters and hyphens.'),
         ]);
     }
@@ -266,6 +273,14 @@ class CheckoutRequest extends Request
             'address.country' => __('Country'),
             'address.address' => __('Address'),
             'address.zip_code' => __('Zipcode'),
+            'billing_address.name' => __('Billing Name'),
+            'billing_address.phone' => __('Billing Phone'),
+            'billing_address.email' => __('Billing Email'),
+            'billing_address.state' => __('Billing State'),
+            'billing_address.city' => __('Billing City'),
+            'billing_address.country' => __('Billing Country'),
+            'billing_address.address' => __('Billing Address'),
+            'billing_address.zip_code' => __('Billing Zipcode / PIN Code'),
         ];
     }
 

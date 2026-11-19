@@ -226,11 +226,13 @@ class PhoneNumberRule implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! is_string($value)) {
+        if (! is_string($value) && ! is_numeric($value)) {
             $fail(trans('validation.string'));
 
             return;
         }
+
+        $value = (string) $value;
 
         $rules = BaseHelper::getPhoneValidationRule(asArray: false);
         $regex = '/^([0-9\s\-\+\(\)]*)$/';
@@ -260,11 +262,11 @@ class PhoneNumberRule implements ValidationRule
      */
     public static function validateCountryLength(mixed $value, Closure $fail): void
     {
-        if (! is_string($value)) {
+        if (! is_string($value) && ! is_numeric($value)) {
             return;
         }
 
-        $trimmed = trim($value);
+        $trimmed = trim((string) $value);
 
         if ($trimmed === '') {
             return;
@@ -320,6 +322,17 @@ class PhoneNumberRule implements ValidationRule
                         'country' => $country,
                         'code' => $code,
                     ]));
+
+                    return;
+                }
+
+                if ($code === '91') {
+                    $checkDigits = (strlen($stripped) === 10) ? $stripped : $nationalDigits;
+                    if (strlen($checkDigits) === 10 && ! in_array($checkDigits[0], ['6', '7', '8', '9'])) {
+                        $fail(__('Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9 for India (+91).'));
+
+                        return;
+                    }
                 }
 
                 return;

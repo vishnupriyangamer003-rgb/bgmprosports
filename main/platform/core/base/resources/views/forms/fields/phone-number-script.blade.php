@@ -700,9 +700,31 @@
                         // Re-parsing on every keystroke would fight the caret while typing.
                         const bulkInputTypes = ['insertFromPaste', 'insertFromDrop', 'insertReplacementText'];
 
-                        element.addEventListener('countrychange', updateHiddenField);
+                        const applyMaxLength = function() {
+                            const countryData = iti.getSelectedCountryData();
+                            const dialCode = countryData && countryData.dialCode ? String(countryData.dialCode) : null;
+                            if (dialCode && countryPhoneRules[dialCode]) {
+                                const rule = countryPhoneRules[dialCode];
+                                element.setAttribute('maxlength', rule.max);
+                            } else {
+                                element.setAttribute('maxlength', 15);
+                            }
+                        };
+
+                        applyMaxLength();
+                        element.addEventListener('countrychange', function() {
+                            applyMaxLength();
+                            updateHiddenField();
+                        });
 
                         element.addEventListener('input', function(event) {
+                            applyMaxLength();
+                            const max = parseInt(element.getAttribute('maxlength')) || 15;
+                            const digits = element.value.replace(/\D/g, '');
+                            if (element.value && !element.value.startsWith('+') && digits.length > max) {
+                                element.value = digits.slice(0, max);
+                            }
+
                             if (! event.inputType || bulkInputTypes.indexOf(event.inputType) !== -1) {
                                 applyInternationalValue();
                             }

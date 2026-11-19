@@ -135,7 +135,10 @@ class PublicCartController extends BaseController
             return $response
                 ->setError()
                 ->setMessage(__('Please log in or register before adding products to your cart.'))
-                ->setData(['redirect_url' => route('customer.login')]);
+                ->setData([
+                    'redirect_url' => route('customer.login'),
+                    'next_url' => route('customer.login'),
+                ]);
         }
 
         /**

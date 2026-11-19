@@ -29,21 +29,21 @@ Total Bugs in 18-11-26 Report: 31 Defects
 --------------------------------------------------------------------------------
 NEW DEFECTS SUMMARY TABLE (BUG-019 to BUG-031)
 --------------------------------------------------------------------------------
-BUG ID   | PAGE / JOURNEY         | SEVERITY | STATUS | TITLE
----------+------------------------+----------+--------+--------------------------------------------------------------
-BUG-019  | Homepage               | Low      | Open   | “Our Blog” label not center-aligned with section heading
-BUG-020  | Homepage               | High     | Open   | “Read More” button in “Latest Updates” triggers 404 error
-BUG-021  | Homepage               | Medium   | Open   | Newsletter subscription accepts invalid email ID (false popup)
-BUG-022  | Products / Cart        | Medium   | Open   | Guest user can add products to Cart and Wishlist without login
-BUG-023  | Cart                   | Medium   | Open   | Same product can be added multiple times despite "Go to Cart"
-BUG-024  | Contact Us             | Medium   | Open   | Contact form accepts invalid data in all fields and submits
-BUG-025  | Shipping Information   | High     | Open   | Form accepts invalid Name, Email, Phone (shows false green tick)
-BUG-026  | Shipping Information   | Medium   | Open   | “Password” label overlaps typed characters in password field
-BUG-027  | Shipping Information   | High     | Open   | Green tick and “Password field is required” shown together
-BUG-028  | Billing Information    | High     | Open   | Billing fields (Name, Email, Address, Pin) accept invalid data
-BUG-029  | Company Invoice        | High     | Open   | Company Invoice fields (Name, Address, Code) accept invalid data
-BUG-030  | Checkout Flow          | Critical | Open   | Order proceeds to payment with invalid shipping/billing data
-BUG-031  | Checkout / Coupon      | Medium   | Open   | Coupon "Apply" button spinner rotates indefinitely on error
+BUG ID   | PAGE / JOURNEY         | SEVERITY | STATUS    | TITLE
+---------+------------------------+----------+-----------+--------------------------------------------------------------
+BUG-019  | Homepage               | Low      | Completed | “Our Blog” label not center-aligned with section heading
+BUG-020  | Homepage               | High     | Completed | “Read More” button in “Latest Updates” triggers 404 error
+BUG-021  | Homepage               | Medium   | Completed | Newsletter subscription accepts invalid email ID (false popup)
+BUG-022  | Products / Cart        | Medium   | Completed | Guest user can add products to Cart and Wishlist without login
+BUG-023  | Cart                   | Medium   | Completed | Same product can be added multiple times despite "Go to Cart"
+BUG-024  | Contact Us             | Medium   | Completed | Contact form accepts invalid data in all fields and submits
+BUG-025  | Shipping Information   | High     | Completed | Form accepts invalid Name, Email, Phone (shows false green tick)
+BUG-026  | Shipping Information   | Medium   | Completed | “Password” label overlaps typed characters in password field
+BUG-027  | Shipping Information   | High     | Completed | Green tick and “Password field is required” shown together
+BUG-028  | Billing Information    | High     | Completed | Billing fields (Name, Email, Address, Pin) accept invalid data
+BUG-029  | Company Invoice        | High     | Completed | Company Invoice fields (Name, Address, Code) accept invalid data
+BUG-030  | Checkout Flow          | Critical | Completed | Order proceeds to payment with invalid shipping/billing data
+BUG-031  | Checkout / Coupon      | Medium   | Completed | Coupon "Apply" button spinner rotates indefinitely on error
 
 
 ================================================================================
@@ -55,7 +55,7 @@ BUG-019: Homepage – “Our Blog” label not center-aligned with “Latest Upd
 --------------------------------------------------------------------------------
 - Defect Page : Homepage
 - Severity    : Low
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/themes/shofy/partials/section-title.blade.php
                 main/platform/themes/shofy/partials/shortcodes/blog-posts/index.blade.php
                 main/platform/themes/shofy/assets/sass/components/_section-title.scss
@@ -77,7 +77,7 @@ BUG-020: Homepage – “Read More” button in “Latest Updates and Insights�
 --------------------------------------------------------------------------------
 - Defect Page : Homepage
 - Severity    : High
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/themes/shofy/partials/shortcodes/blog-posts/index.blade.php
                 Shortcode button_url parameter or fallback `get_blog_page_url()`
 - Steps to Reproduce:
@@ -101,7 +101,7 @@ BUG-021: Homepage – Newsletter subscription accepts invalid email ID
 --------------------------------------------------------------------------------
 - Defect Page : Homepage
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/newsletter/src/Http/Requests/NewsletterRequest.php
                 main/platform/themes/shofy/partials/shortcodes/newsletter/index.blade.php
 - Steps to Reproduce:
@@ -132,7 +132,7 @@ BUG-022: Products – Guest user can add products to Cart and Wishlist without l
 --------------------------------------------------------------------------------
 - Defect Page : Products / Product Detail
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/src/Http/Controllers/Fronts/PublicCartController.php
                 main/platform/plugins/ecommerce/src/Http/Controllers/API/WishlistController.php
                 main/platform/plugins/ecommerce/resources/js/front-ecommerce.js
@@ -159,7 +159,7 @@ BUG-023: Cart – Same product can be added multiple times after it is already i
 --------------------------------------------------------------------------------
 - Defect Page : Cart / Product Card
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/themes/shofy/views/ecommerce/includes/product-item.blade.php
                 main/platform/plugins/ecommerce/public/js/front-ecommerce.js
 - Steps to Reproduce:
@@ -187,7 +187,7 @@ BUG-024: Contact Us – Form accepts invalid data in all fields and submits succ
 --------------------------------------------------------------------------------
 - Defect Page : Contact Us
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/contact/src/Http/Requests/ContactRequest.php
                 main/platform/plugins/contact/src/Forms/Fronts/ContactForm.php
                 main/platform/plugins/contact/resources/js/contact-public.js
@@ -220,7 +220,7 @@ BUG-025: Shipping Information – Form accepts invalid Name, Email and Phone Num
 --------------------------------------------------------------------------------
 - Defect Page : Shipping Information / Checkout
 - Severity    : High
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/src/Http/Requests/SaveCheckoutInformationRequest.php
                 main/platform/plugins/ecommerce/src/Supports/EcommerceHelper.php
                 main/platform/plugins/ecommerce/resources/js/front/checkout.js
@@ -246,7 +246,7 @@ BUG-026: Shipping Information – “Password” label overlaps the entered pass
 --------------------------------------------------------------------------------
 - Defect Page : Shipping Information (Create Account checkbox)
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/resources/views/orders/partials/address-form.blade.php
                 main/platform/themes/shofy/assets/sass/components/_checkout.scss
 - Steps to Reproduce:
@@ -269,7 +269,7 @@ BUG-027: Shipping Information – “Password field is required” error shown e
 --------------------------------------------------------------------------------
 - Defect Page : Shipping Information (Create Account checkbox)
 - Severity    : High
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/resources/js/front/checkout.js
                 main/platform/plugins/ecommerce/resources/views/orders/partials/address-form.blade.php
 - Steps to Reproduce:
@@ -294,7 +294,7 @@ BUG-028: Shipping Information – Billing Information fields accept invalid data
 --------------------------------------------------------------------------------
 - Defect Page : Shipping / Billing Information
 - Severity    : High
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/src/Http/Requests/SaveCheckoutInformationRequest.php
                 main/platform/plugins/ecommerce/resources/js/front/checkout.js
 - Steps to Reproduce:
@@ -316,7 +316,7 @@ BUG-029: Billing Information – Company Invoice fields accept invalid data
 --------------------------------------------------------------------------------
 - Defect Page : Billing Information (Company Invoice)
 - Severity    : High
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/src/Http/Requests/SaveCheckoutInformationRequest.php
                 main/platform/plugins/ecommerce/resources/views/orders/partials/tax-information.blade.php
 - Steps to Reproduce:
@@ -341,7 +341,7 @@ BUG-030: Checkout – Order proceeds to payment with invalid shipping, billing a
 --------------------------------------------------------------------------------
 - Defect Page : Checkout Flow (Step 1 to Step 2 Transition)
 - Severity    : Critical
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/src/Http/Controllers/Fronts/PublicCheckoutController.php
                 main/platform/plugins/ecommerce/src/Http/Requests/SaveCheckoutInformationRequest.php
 - Steps to Reproduce:
@@ -363,7 +363,7 @@ BUG-031: Shipping Information – Coupon “Apply” loading spinner keeps rotat
 --------------------------------------------------------------------------------
 - Defect Page : Shipping Information / Checkout Coupon Section
 - Severity    : Medium
-- Status      : Open
+- Status      : Completed
 - Affected    : main/platform/plugins/ecommerce/resources/js/front/partials/discount.js
                 main/platform/plugins/ecommerce/public/js/checkout.js
 - Steps to Reproduce:

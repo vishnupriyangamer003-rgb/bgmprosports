@@ -44,7 +44,18 @@
             @endforeach
         </div>
 
-        @if(($buttonLabel = $shortcode->button_label) && ($buttonUrl = $shortcode->button_url ?: get_blog_page_url()))
+        @php
+            $buttonLabel = $shortcode->button_label;
+            $buttonUrl = $shortcode->button_url;
+
+            if (! $buttonUrl || $buttonUrl === '#' || $buttonUrl === '/blog' || $buttonUrl === 'blog' || $buttonUrl === BaseHelper::getHomepageUrl()) {
+                $buttonUrl = (function_exists('get_blog_page_url') ? get_blog_page_url() : null) ?: (Route::has('public.blog') ? route('public.blog') : url('blog'));
+            } elseif (! Str::startsWith($buttonUrl, ['http://', 'https://'])) {
+                $buttonUrl = url(ltrim($buttonUrl, '/'));
+            }
+        @endphp
+
+        @if($buttonLabel)
             <div class="row">
                 <div class="col-xl-12">
                     <div class="tp-blog-more-2 mt-10 text-center">

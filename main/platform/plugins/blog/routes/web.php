@@ -90,20 +90,6 @@ Route::group(['namespace' => 'Botble\Blog\Http\Controllers'], function (): void 
                 'as' => 'public.search',
                 'uses' => 'PublicController@getSearch',
             ]);
-
-            Route::get('blog', function () {
-                $blogUrl = get_blog_page_url();
-                if ($blogUrl && $blogUrl !== BaseHelper::getHomepageUrl()) {
-                    return redirect()->to($blogUrl);
-                }
-
-                $firstPost = \Botble\Blog\Models\Post::query()->wherePublished()->first();
-                if ($firstPost) {
-                    return redirect()->to($firstPost->url);
-                }
-
-                return redirect()->to('/');
-            })->name('public.blog');
         });
     }
 });

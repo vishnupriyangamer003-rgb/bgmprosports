@@ -587,6 +587,13 @@ body,
         }
     }
 
+    .form-control.is-valid,
+    .was-validated .form-control:valid,
+    .customer-billing-address-form .form-control:valid,
+    .checkout-form .form-control:valid {
+        background-image: none !important;
+    }
+
     .phone-input-wrapper {
         position: relative;
 

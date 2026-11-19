@@ -48,6 +48,8 @@ node_modules/
 /.vscode/
 /.idea/
 *.swp
+~$*
+*temp*.xlsx
 
 # --- OS junk ---
 .DS_Store

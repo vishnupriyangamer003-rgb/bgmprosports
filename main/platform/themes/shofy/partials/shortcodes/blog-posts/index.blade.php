@@ -2,14 +2,17 @@
     <div class="container">
         <div class="row align-items-center mb-40">
             <div class="col-xl-4 col-md-6">
-                {!! Theme::partial('section-title', compact('shortcode')) !!}
+                {!! Theme::partial('section-title', ['shortcode' => $shortcode, 'class' => (($shortcode->align ?? null) === 'center' ? 'text-center' : '')]) !!}
             </div>
             <div class="col-xl-8 col-md-6">
                 @php
                     $buttonLabel = $shortcode->button_label;
-                    $buttonUrl = $shortcode->button_url ?: get_blog_page_url();
+                    $buttonUrl = $shortcode->button_url;
+
                     if (! $buttonUrl || $buttonUrl === '#' || $buttonUrl === '/blog' || $buttonUrl === 'blog' || $buttonUrl === BaseHelper::getHomepageUrl()) {
-                        $buttonUrl = route('public.blog');
+                        $buttonUrl = (function_exists('get_blog_page_url') ? get_blog_page_url() : null) ?: (Route::has('public.blog') ? route('public.blog') : url('blog'));
+                    } elseif (! Str::startsWith($buttonUrl, ['http://', 'https://'])) {
+                        $buttonUrl = url(ltrim($buttonUrl, '/'));
                     }
                 @endphp
                 @if($buttonLabel)

@@ -71,7 +71,10 @@ class WishlistController extends BaseController
                 ->httpResponse()
                 ->setError()
                 ->setMessage(__('Please log in or register before adding products to your wishlist.'))
-                ->setData(['redirect_url' => route('customer.login')]);
+                ->setData([
+                    'redirect_url' => route('customer.login'),
+                    'next_url' => route('customer.login'),
+                ]);
         }
 
         if (! $productId) {

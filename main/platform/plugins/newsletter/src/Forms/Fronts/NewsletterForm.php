@@ -41,6 +41,8 @@ class NewsletterForm extends FormFront
                     ->maxLength(-1)
                     ->placeholder(trans('plugins/newsletter::newsletter.enter_your_email'))
                     ->addAttribute('id', 'newsletter-email')
+                    ->addAttribute('pattern', '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$')
+                    ->addAttribute('title', 'Please enter a valid email address with a valid domain extension.')
             )
             ->add(
                 'submit',

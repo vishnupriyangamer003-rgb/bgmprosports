@@ -95,6 +95,8 @@
                     name="address[name]"
                     autocomplete="family-name"
                     type="text"
+                    minlength="3"
+                    maxlength="120"
                     value="{{ old('address.name', Arr::get($sessionCheckoutData, 'name')) ?: (auth('customer')->check() ? auth('customer')->user()->name : null) }}"
                     required
                 >
@@ -119,6 +121,7 @@
                                 name="address[email]"
                                 autocomplete="email"
                                 type="email"
+                                maxlength="60"
                                 value="{{ old('address.email', Arr::get($sessionCheckoutData, 'email')) ?: (auth('customer')->check() ? auth('customer')->user()->email : null) }}"
                                 @required(in_array('email', $enabledMandatoryFields))
                             >
@@ -325,6 +328,8 @@
                         name="address[address]"
                         autocomplete="address"
                         type="text"
+                        minlength="3"
+                        maxlength="255"
                         value="{{ old('address.address', Arr::get($sessionCheckoutData, 'address')) }}"
                         @required(in_array('address', $enabledMandatoryFields))
                     >
@@ -343,6 +348,7 @@
                         name="address[zip_code]"
                         autocomplete="postal-code"
                         type="text"
+                        maxlength="10"
                         value="{{ old('address.zip_code', Arr::get($sessionCheckoutData, 'zip_code')) }}"
                         required
                     >

@@ -75,9 +75,9 @@ class ContactForm extends FormFront
         }
 
         try {
-            $mandatoryFields = array_filter(explode(',', (string) Arr::get($data, 'mandatory_fields'))) ?: ['email'];
+            $mandatoryFields = array_filter(explode(',', (string) Arr::get($data, 'mandatory_fields'))) ?: ['email', 'phone'];
         } catch (Throwable) {
-            $mandatoryFields = ['email'];
+            $mandatoryFields = ['email', 'phone'];
         }
 
         $this
@@ -123,6 +123,8 @@ class ContactForm extends FormFront
                                     ->wrapperAttributes(['class' => $this->formInputWrapperClass])
                                     ->cssClass($this->formInputClass)
                                     ->maxLength(-1)
+                                    ->addAttribute('pattern', "^[\pL\s.'-]+$")
+                                    ->addAttribute('title', 'The name must only contain letters, spaces, hyphens, and dots.')
                             );
                     })
                     ->when(in_array('email', $displayFields), function (self $form) use ($mandatoryFields): void {
@@ -133,14 +135,14 @@ class ContactForm extends FormFront
                                         'email',
                                         EmailField::class,
                                         TextFieldOption::make()
-                                            ->when(in_array('email', $mandatoryFields), function (TextFieldOption $option): void {
-                                                $option->required();
-                                            })
+                                            ->required()
                                             ->label(trans('plugins/contact::contact.form_email'))
                                             ->placeholder(trans('plugins/contact::contact.your_email'))
                                             ->wrapperAttributes(['class' => $this->formInputWrapperClass])
                                             ->cssClass($this->formInputClass)
                                             ->maxLength(-1)
+                                            ->addAttribute('pattern', '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$')
+                                            ->addAttribute('title', 'Please enter a valid email address with a valid domain extension.')
                                     );
                             });
                     })
@@ -169,14 +171,14 @@ class ContactForm extends FormFront
                                     'phone',
                                     PhoneNumberField::class,
                                     PhoneNumberFieldOption::make()
-                                        ->when(in_array('phone', $mandatoryFields), function (PhoneNumberFieldOption $option): void {
-                                            $option->required();
-                                        })
+                                        ->required()
                                         ->label(trans('plugins/contact::contact.phone'))
                                         ->placeholder(trans('plugins/contact::contact.your_phone'))
                                         ->wrapperAttributes(['class' => $this->formInputWrapperClass])
                                         ->withCountryCodeSelection()
                                         ->cssClass($this->formInputClass)
+                                        ->addAttribute('maxlength', '10')
+                                        ->addAttribute('title', 'Please enter a valid phone number.')
                                 );
                         });
                     })
@@ -262,6 +264,8 @@ class ContactForm extends FormFront
                     ->wrapperAttributes(['class' => $this->formInputWrapperClass])
                     ->cssClass($this->formInputClass)
                     ->maxLength(-1)
+                    ->addAttribute('minlength', '5')
+                    ->addAttribute('title', 'The message must be at least 5 characters.')
             )
             ->when(setting('contact_form_show_terms_checkbox', true), function (self $form): void {
                 $privacyPolicyUrl = theme_option('term_and_privacy_policy_url');
